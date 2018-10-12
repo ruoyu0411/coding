@@ -1,0 +1,55 @@
+#!/bin/bash
+#create by Ruoyu for version 1.0
+
+date0=/tmp/date1
+
+read -p  "######pls input the start date[YYYYMMDD]######" startdate
+echo ""
+
+read -p  "######pls input the start date[YYYYMMDD]######" enddate
+echo ""
+
+days=$((enddate-startdate))
+
+echo "Copy the files to backup folder, pls waiting..."
+echo ""
+sleep 5
+
+#copy file to dedicate path
+for ((t==1;t<=$days;t++))
+ do
+ cp /home/admin/*-"$(($startdate+t))"* /tmp/file/
+ done
+
+#unzip the .gz files.....
+
+echo "Unzip the files, pls wating..."
+
+for ((x==1;x<=$days;x++))
+ do
+ gunzip /tmp/file/*"$(($startdate+x))"* 
+ done
+
+
+echo "The script will check the total times"
+echo ""
+sleep 2
+
+for ((i==1;i<=$days;i++))
+ do
+#   cat /home/admin/*-"$(($startdate+i))"* | grep aaa | wc -l > $((date$i))
+ cat /tmp/file/*-"$(($startdate+i))"* | grep aaa | wc -l >> $date0
+ done
+
+
+#sum the total times
+echo "The totoal times:"
+cat /tmp/date1 |awk '{sum+=$1} END {print sum}'
+
+#//delete the tmp file
+rm -rf $date0
+
+for ((r==1;r<=$days;r++))
+ do
+ rm /tmp/file/*-"$(($startdate+r))"*
+ done
